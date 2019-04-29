@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="165727ff-d145-4e70-958b-2fab87e2f925" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/BlackHole.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/BlackHole.tsx" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -20,19 +18,17 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/components/BlackHole.tsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="589">
-              <caret line="111" selection-start-line="111" selection-end-line="111" />
+            <state relative-caret-position="951">
+              <caret line="87" column="45" selection-start-line="87" selection-start-column="45" selection-end-line="87" selection-end-column="45" />
               <folding>
                 <element signature="n#!!block;n#constructor#0;n#Universe#0" />
                 <element signature="n#!!block;n#render#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#componentDidMount#0;n#Universe#0" />
                 <element signature="n#!!block;n#startHover#0;n#BlackHoleComponent#0" />
                 <element signature="n#!!block;n#stopHover#0;n#BlackHoleComponent#0" />
                 <element signature="n#!!block;n#click#0;n#BlackHoleComponent#0" />
                 <element signature="n#!!block;n#onEscape#0;n#Universe#0" />
                 <element signature="n#!!block;n#createStars#0;n#BlackHoleComponent#0" />
                 <element signature="n#!!block;n#startRenderLoop#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#renderLoop#0;n#Universe#0" />
                 <element signature="n#!!block;n#setDPI#0;n#Universe#0" />
               </folding>
             </state>
@@ -181,12 +177,12 @@
       <updated>1556402283555</updated>
       <workItem from="1556402285408" duration="721000" />
       <workItem from="1556404289169" duration="6592000" />
-      <workItem from="1556499750812" duration="5516000" />
+      <workItem from="1556499750812" duration="6478000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="12829000" />
+    <option name="totallyTimeSpent" value="13791000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
@@ -292,19 +288,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/components/BlackHole.tsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="589">
-          <caret line="111" selection-start-line="111" selection-end-line="111" />
+        <state relative-caret-position="951">
+          <caret line="87" column="45" selection-start-line="87" selection-start-column="45" selection-end-line="87" selection-end-column="45" />
           <folding>
             <element signature="n#!!block;n#constructor#0;n#Universe#0" />
             <element signature="n#!!block;n#render#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#componentDidMount#0;n#Universe#0" />
             <element signature="n#!!block;n#startHover#0;n#BlackHoleComponent#0" />
             <element signature="n#!!block;n#stopHover#0;n#BlackHoleComponent#0" />
             <element signature="n#!!block;n#click#0;n#BlackHoleComponent#0" />
             <element signature="n#!!block;n#onEscape#0;n#Universe#0" />
             <element signature="n#!!block;n#createStars#0;n#BlackHoleComponent#0" />
             <element signature="n#!!block;n#startRenderLoop#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#renderLoop#0;n#Universe#0" />
             <element signature="n#!!block;n#setDPI#0;n#Universe#0" />
           </folding>
         </state>

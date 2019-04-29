@@ -15,6 +15,7 @@ interface NPSUniverseState {
 
 export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState> {
     canvas: HTMLCanvasElement | undefined;
+    canvasContext: CanvasRenderingContext2D | undefined;
     blackHole: BlackHole | undefined;
 
     constructor(props: NPSUniverseProps) {
@@ -42,6 +43,7 @@ export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState
     componentDidMount() {
         document.addEventListener("keydown", () => this.onEscape, false);
         this.canvas = document.getElementById("blackhole-canvas") as HTMLCanvasElement;
+        this.canvasContext = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         this.setDPI(192);
         this.createBlackHole(starCount);
         this.startRenderLoop();
@@ -73,12 +75,20 @@ export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState
     }
 
     renderLoop() {
+        this.clearCanvas();
         if (this.blackHole) {
             this.blackHole.draw(this.state.collapsed, this.state.expanded);
         }
         setTimeout(() => {
             this.renderLoop();
         }, 1000 / 60);
+    }
+
+    clearCanvas() {
+        if (this.canvas && this.canvasContext) {
+            this.canvasContext.fillStyle = 'rgba(25,25,25,0.2)'; // somewhat clear the context, this way there will be trails behind the stars
+            this.canvasContext.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
     }
 
     setDPI(dpi: number) {
@@ -126,7 +136,7 @@ class BlackHole {
     createStars(starCount: number) {
         this.stars = [];
         for (let i = 0; i < starCount; i++) {
-            this.stars.push(new Star(this));
+            this.stars.push(new Star(this, i));
         }
     }
 
@@ -143,6 +153,16 @@ class Star {
     rotation: number = 0;
     startRotation: number;
     speed: number;
+    yOrigin: number;
+    x: number;
+    y: number;
+    trail: number = 1;
+    hoverPos: number;
+    collapseBonus: number;
+    expansPos: number;
+    prevR: number;
+    prevX: number;
+    prevY: number;
 
     get context() {
         return this.blackHole.context;
@@ -166,7 +186,7 @@ class Star {
         return 0;
     }
 
-    constructor(blackHole: BlackHole) {
+    constructor(blackHole: BlackHole, index: number) {
         this.blackHole = blackHole;
 
         let rands = [];
@@ -176,8 +196,21 @@ class Star {
             return p + c;
         }, 0) / rands.length);
 
+        this.collapseBonus = this.orbitDistance - (maxOrbit * 0.7); // This "bonus" is used to randomly place some stars outside of the blackhole on hover
+        if (this.collapseBonus < 0) { // if the collapsed "bonus" is negative
+            this.collapseBonus = 0; // set it to 0, this way no stars will go inside the blackhole
+        }
+
+        this.x = blackHole.xPos;
+        this.y = blackHole.yPos;
         this.startRotation = (Math.floor(Math.random() * 360) + 1) * Math.PI / 180; // Starting rotation.  If not random, all stars will be generated in a single line.
         this.speed = (Math.floor(Math.random() * 2.5) + 1.5) * Math.PI / 180; // The rate at which this star will orbit
+        this.yOrigin = this.y + this.orbitDistance;  // this is used to track the particles origin
+        this.hoverPos = this.blackHole.yPos + (maxOrbit / 2) + this.collapseBonus;  // Where the star will go on hover of the blackhole
+        this.expansPos = blackHole.yPos + (index % 100) * -10 + (Math.floor(Math.random() * 20) + 1); // Where the star will go when expansion takes place
+        this.prevR = this.startRotation;
+        this.prevX = this.x;
+        this.prevY = this.y;
 
         this.color = 'rgba(255,255,255,' + (1 - ((this.orbitDistance) / 255)) + ')';
     }
