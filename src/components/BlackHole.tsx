@@ -1,169 +1,188 @@
 import React from 'react';
 
-export class BlackHoleComponent extends React.Component {
+const holeCount = 1;
+const starCount = 2500;
+const maxOrbit = 250;
+
+interface NPSUniverseProps {
+
+}
+
+interface NPSUniverseState {
+    collapsed: boolean;
+    expanded: boolean;
+}
+
+export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState> {
+    canvas: HTMLCanvasElement | undefined;
     blackHole: BlackHole | undefined;
+
+    constructor(props: NPSUniverseProps) {
+        super(props);
+
+        this.state = {
+            collapsed: false,
+            expanded: false,
+        }
+    }
 
     render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
         return <div id="blackhole">
-            <div className="centerHover"><span>Null Pointer Studios</span></div>
+            <div
+                className="centerHover"
+                onMouseEnter={() => this.onStartHover}
+                onMouseLeave={() => this.onStopHover}
+                onClick={() => this.onClick}
+            >
+                <span>Null Pointer Studios</span></div>
             <canvas id={"blackhole-canvas"}/>
         </div>
     }
 
     componentDidMount() {
-        this.blackHole = new BlackHole('blackhole-canvas');
-        this.blackHole.setDPI(192);
-        this.blackHole.createStars(2500);
-        this.blackHole.start();
+        document.addEventListener("keydown", () => this.onEscape, false);
+        this.canvas = document.getElementById("blackhole-canvas") as HTMLCanvasElement;
+        this.setDPI(192);
+        this.createBlackHole(starCount);
+        this.startRenderLoop();
+    }
+
+    onStartHover() {
+        this.setState({collapsed: true});
+    }
+
+    onStopHover() {
+        this.setState({collapsed: false});
+    }
+
+    onClick() {
+        this.setState({expanded: true});
+    }
+
+    onEscape() {
+        this.setState({expanded: false});
+    }
+
+    createBlackHole(starCount: number) {
+        this.blackHole = new BlackHole(this.canvas as HTMLCanvasElement);
+        this.blackHole.createStars(starCount);
+    }
+
+    startRenderLoop() {
+        this.renderLoop();
+    }
+
+    renderLoop() {
+        if (this.blackHole) {
+            this.blackHole.draw(this.state.collapsed, this.state.expanded);
+        }
+        setTimeout(() => {
+            this.renderLoop();
+        }, 1000 / 60);
+    }
+
+    setDPI(dpi: number) {
+        if (this.canvas) {
+            if (!this.canvas.style.width)
+                this.canvas.style.width = this.canvas.width + 'px';
+            if (!this.canvas.style.height)
+                this.canvas.style.height = this.canvas.height + 'px';
+
+            let scaleFactor = dpi / 96;
+            this.canvas.width = Math.ceil(this.canvas.width * scaleFactor);
+            this.canvas.height = Math.ceil(this.canvas.height * scaleFactor);
+
+            const context = this.canvas.getContext('2d');
+            if (context) {
+                context.scale(scaleFactor, scaleFactor);
+            }
+        }
     }
 }
 
 class BlackHole {
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
-    canvasHeight: number;
-    canvasWidth: number;
-    maxOrbit: number = 255; // Distance from center
-    centerX: number;
-    centerY: number;
     startTime = new Date().getTime();
     stars: Star[] = [];
-    collapsed: boolean = false;
-    expanded: boolean = false;
-    self: BlackHole;
 
-    get currentTime(): number {
+    constructor(canvas: HTMLCanvasElement) {
+        this.canvas = canvas;
+        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
+    }
+
+    get xPos(): number {
+        return this.canvas.width / 2;
+    }
+
+    get yPos(): number {
+        return this.canvas.height / 2;
+    }
+
+    get time(): number {
         return (new Date().getTime() - this.startTime) / 50;
     }
 
-    constructor(canvasId: string) {
-        this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
-        if (this.canvas.parentElement){
-            this.canvas.width = this.canvas.parentElement.clientWidth;
-            this.canvas.height = this.canvas.parentElement.clientHeight;
-        }
-        this.canvasHeight = this.canvas.height;
-        this.canvasWidth = this.canvas.width;
-        this.centerX = this.canvasWidth / 2;
-        this.centerY = this.canvasHeight / 2;
-
-        this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-        this.context.globalCompositeOperation = 'multiply';
-
-        this.context.fillStyle = 'rgba(25,25,25,1)';  // Initial clear of the canvas, to avoid an issue where it all gets too dark
-        this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
-        this.self = this;
-    }
-
-    setDPI(dpi: number) {
-        // Set up CSS size if it's not set up already
-        if (!this.canvas.style.width)
-            this.canvas.style.width = this.canvas.width + 'px';
-        if (!this.canvas.style.height)
-            this.canvas.style.height = this.canvas.height + 'px';
-
-        let scaleFactor = dpi / 96;
-        this.canvas.width = Math.ceil(this.canvas.width * scaleFactor);
-        this.canvas.height = Math.ceil(this.canvas.height * scaleFactor);
-        this.context.scale(scaleFactor, scaleFactor);
-    }
-
-    createStar(id: number): Star {
-        return new Star(this.context, id, this.centerX, this.centerY, this.maxOrbit);
-    }
-
-    createStars(count: number) {
+    createStars(starCount: number) {
         this.stars = [];
-        for (let i = 0; i < count; i++) {
-            this.stars.push(this.createStar(i));
+        for (let i = 0; i < starCount; i++) {
+            this.stars.push(new Star(this));
         }
     }
 
-    start() {
-        this.loop();
-    }
-
-    stop() {
-
-    }
-
-    loop() {
-        this.clearCanvas();
-        this.stars.forEach((star: Star) => {
-            star.draw(this.currentTime, this.expanded, this.collapsed);
+    draw(collapsed: boolean, expanded: boolean) {
+        this.stars.forEach(star => {
+            star.draw(this.time, collapsed, expanded);
         });
-
-        setTimeout(() => {
-            this.loop();
-        }, 1000 / 60);
-    }
-
-    clearCanvas() {
-        this.context.fillStyle = 'rgba(25,25,25,0.2)'; // somewhat clear the context, this way there will be trails behind the stars
-        this.context.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
     }
 }
 
 class Star {
-    context: CanvasRenderingContext2D;
     color: string;
-    orbital: number;
-    centerX: number;
-    centerY: number;
-    x: number;
-    y: number;
-    yOrigin: number;
-    speed: number;
-    rotation: number;
+    orbitDistance: number;
+    rotation: number = 0;
     startRotation: number;
-    collapseBonus: number;
-    hoverPos: number;
-    expansPos: number;
-    prevR: number;
-    prevX: number;
-    prevY: number;
-    id: number;
-    trail: number = 1;
+    speed: number;
 
-    constructor(context: CanvasRenderingContext2D, id: number, centerX: number, centerY: number, maxOrbit: number) {
-        this.context = context;
-        this.centerX = centerX;
-        this.centerY = centerY;
-        this.x = centerX;
-        this.y = centerY;
-        this.id = id;
+    get context() {
+        return this.blackHole.context;
+    }
 
-        // Get a weighted random number, so that the majority of stars will form in the center of the orbit
+    blackHole: BlackHole;
+
+    get centerX(): number {
+        return this.blackHole.xPos;
+    }
+
+    get centerY(): number {
+        return this.blackHole.yPos;
+    }
+
+    get xPos(): number {
+        return 0;
+    }
+
+    get yPos(): number {
+        return 0;
+    }
+
+    constructor(blackHole: BlackHole) {
+        this.blackHole = blackHole;
+
         let rands = [];
         rands.push(Math.random() * (maxOrbit / 2) + 1);
         rands.push(Math.random() * (maxOrbit / 2) + maxOrbit);
-
-        this.orbital = (rands.reduce(function (p, c) {
+        this.orbitDistance = (rands.reduce(function (p, c) {
             return p + c;
         }, 0) / rands.length);
 
-        this.yOrigin = this.y + this.orbital;  // this is used to track the particles origin
-        this.speed = (Math.floor(Math.random() * 2.5) + 1.5) * Math.PI / 180; // The rate at which this star will orbit
-        this.rotation = 0; // current Rotation
         this.startRotation = (Math.floor(Math.random() * 360) + 1) * Math.PI / 180; // Starting rotation.  If not random, all stars will be generated in a single line.
+        this.speed = (Math.floor(Math.random() * 2.5) + 1.5) * Math.PI / 180; // The rate at which this star will orbit
 
-        this.collapseBonus = this.orbital - (maxOrbit * 0.7); // This "bonus" is used to randomly place some stars outside of the blackhole on hover
-        if (this.collapseBonus < 0) { // if the collapsed "bonus" is negative
-            this.collapseBonus = 0; // set it to 0, this way no stars will go inside the blackhole
-        }
-
-        this.color = 'rgba(255,255,255,' + (1 - ((this.orbital) / 255)) + ')'; // Color the star white, but make it more transparent the further out it is generated
-
-        this.hoverPos = centerY + (maxOrbit / 2) + this.collapseBonus;  // Where the star will go on hover of the blackhole
-        this.expansPos = centerY + (this.id % 100) * -10 + (Math.floor(Math.random() * 20) + 1); // Where the star will go when expansion takes place
-
-        this.prevR = this.startRotation;
-        this.prevX = this.x;
-        this.prevY = this.y;
+        this.color = 'rgba(255,255,255,' + (1 - ((this.orbitDistance) / 255)) + ')';
     }
 
-    draw(time: number, expanded: boolean = false, collapsed: boolean = false) {
+    draw(time: number, collapsed: boolean, expanded: boolean) {
         if (!expanded) {
             this.rotation = this.startRotation + (time * this.speed);
             if (!collapsed) { // not hovered
@@ -190,6 +209,7 @@ class Star {
         }
 
         this.context.save();
+
         this.context.fillStyle = this.color;
         this.context.strokeStyle = this.color;
         this.context.beginPath();
@@ -200,12 +220,8 @@ class Star {
         this.context.translate(-this.centerX, -this.centerY);
         this.context.lineTo(this.x, this.y);
         this.context.stroke();
+
         this.context.restore();
-
-
-        this.prevR = this.rotation;
-        this.prevX = this.x;
-        this.prevY = this.y;
     }
 }
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import {BlackHoleComponent} from "./components/BlackHole";
+import {Universe} from "./components/BlackHole";
 
 const App: React.FC = () => {
   return (
-      <BlackHoleComponent></BlackHoleComponent>
+      <Universe></Universe>
   );
 };
 
