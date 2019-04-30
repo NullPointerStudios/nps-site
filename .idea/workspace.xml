@@ -18,18 +18,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/components/BlackHole.tsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="951">
-              <caret line="87" column="45" selection-start-line="87" selection-start-column="45" selection-end-line="87" selection-end-column="45" />
+            <state relative-caret-position="572">
+              <caret line="189" column="14" selection-start-line="189" selection-start-column="14" selection-end-line="189" selection-end-column="14" />
               <folding>
+                <element signature="e#0#26#0" expanded="true" />
                 <element signature="n#!!block;n#constructor#0;n#Universe#0" />
-                <element signature="n#!!block;n#render#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#startHover#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#stopHover#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#click#0;n#BlackHoleComponent#0" />
                 <element signature="n#!!block;n#onEscape#0;n#Universe#0" />
-                <element signature="n#!!block;n#createStars#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#startRenderLoop#0;n#BlackHoleComponent#0" />
-                <element signature="n#!!block;n#setDPI#0;n#Universe#0" />
               </folding>
             </state>
           </provider>
@@ -38,7 +32,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/node_modules/@types/react/index.d.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="742">
+            <state relative-caret-position="6290">
               <caret line="397" column="24" selection-start-line="397" selection-start-column="23" selection-end-line="397" selection-end-column="24" />
             </state>
           </provider>
@@ -57,7 +51,7 @@
         <entry file="file://$PROJECT_DIR$/src/index.tsx">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="136">
-              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+              <caret line="12" selection-start-line="12" selection-end-line="12" />
               <folding>
                 <element signature="e#0#26#0" expanded="true" />
               </folding>
@@ -178,11 +172,12 @@
       <workItem from="1556402285408" duration="721000" />
       <workItem from="1556404289169" duration="6592000" />
       <workItem from="1556499750812" duration="6478000" />
+      <workItem from="1556581110226" duration="5565000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13791000" />
+    <option name="totallyTimeSpent" value="19356000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="2576" height="1416" extended-state="6" />
@@ -242,6 +237,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/components/BlackHole.tsx">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="572">
+          <caret line="189" column="14" selection-start-line="189" selection-start-column="14" selection-end-line="189" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="n#!!block;n#constructor#0;n#Universe#0" />
+            <element signature="n#!!block;n#onEscape#0;n#Universe#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/react/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6290">
+          <caret line="397" column="24" selection-start-line="397" selection-start-column="23" selection-end-line="397" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/index.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
@@ -252,7 +266,7 @@
     <entry file="file://$PROJECT_DIR$/src/index.tsx">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
-          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+          <caret line="12" selection-start-line="12" selection-end-line="12" />
           <folding>
             <element signature="e#0#26#0" expanded="true" />
           </folding>
@@ -276,31 +290,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="561">
           <caret line="33" selection-start-line="33" selection-end-line="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/@types/react/index.d.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="742">
-          <caret line="397" column="24" selection-start-line="397" selection-start-column="23" selection-end-line="397" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/components/BlackHole.tsx">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="951">
-          <caret line="87" column="45" selection-start-line="87" selection-start-column="45" selection-end-line="87" selection-end-column="45" />
-          <folding>
-            <element signature="n#!!block;n#constructor#0;n#Universe#0" />
-            <element signature="n#!!block;n#render#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#startHover#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#stopHover#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#click#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#onEscape#0;n#Universe#0" />
-            <element signature="n#!!block;n#createStars#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#startRenderLoop#0;n#BlackHoleComponent#0" />
-            <element signature="n#!!block;n#setDPI#0;n#Universe#0" />
-          </folding>
         </state>
       </provider>
     </entry>

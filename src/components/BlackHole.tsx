@@ -1,4 +1,5 @@
 import React from 'react';
+import {Color} from "csstype";
 
 const holeCount = 1;
 const starCount = 2500;
@@ -41,7 +42,8 @@ export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState
     }
 
     componentDidMount() {
-        document.addEventListener("keydown", () => this.onEscape, false);
+        document.addEventListener("keydown", () => this.onEscape(), false);
+        window.addEventListener("resize", () => this.onResize(), false);
         this.canvas = document.getElementById("blackhole-canvas") as HTMLCanvasElement;
         this.canvasContext = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         this.setDPI(192);
@@ -63,6 +65,10 @@ export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState
 
     onEscape() {
         this.setState({expanded: false});
+    }
+
+    onResize() {
+        this.setDPI(192);
     }
 
     createBlackHole(starCount: number) {
@@ -92,15 +98,15 @@ export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState
     }
 
     setDPI(dpi: number) {
-        if (this.canvas) {
-            if (!this.canvas.style.width)
-                this.canvas.style.width = this.canvas.width + 'px';
-            if (!this.canvas.style.height)
-                this.canvas.style.height = this.canvas.height + 'px';
+        if (this.canvas && this.canvas.parentElement) {
+            const targetWidth = this.canvas.parentElement.clientWidth;
+            const targetHeight = this.canvas.parentElement.clientHeight;
+            this.canvas.style.width = targetWidth + 'px';
+            this.canvas.style.height = targetHeight + 'px';
 
             let scaleFactor = dpi / 96;
-            this.canvas.width = Math.ceil(this.canvas.width * scaleFactor);
-            this.canvas.height = Math.ceil(this.canvas.height * scaleFactor);
+            this.canvas.width = Math.ceil(targetWidth * scaleFactor);
+            this.canvas.height = Math.ceil(targetHeight * scaleFactor);
 
             const context = this.canvas.getContext('2d');
             if (context) {
@@ -115,18 +121,19 @@ class BlackHole {
     context: CanvasRenderingContext2D;
     startTime = new Date().getTime();
     stars: Star[] = [];
+    radius: number = 100;
+
+    get position() {
+        return {
+            x: this.canvas.width / 4,
+            y: this.canvas.height / 4
+        }
+    }
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.context = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-    }
 
-    get xPos(): number {
-        return this.canvas.width / 2;
-    }
-
-    get yPos(): number {
-        return this.canvas.height / 2;
     }
 
     get time(): number {
@@ -141,6 +148,8 @@ class BlackHole {
     }
 
     draw(collapsed: boolean, expanded: boolean) {
+        drawSphere(this.context, this.position, this.radius, "Blue", "Black", true);
+
         this.stars.forEach(star => {
             star.draw(this.time, collapsed, expanded);
         });
@@ -148,21 +157,14 @@ class BlackHole {
 }
 
 class Star {
-    color: string;
-    orbitDistance: number;
-    rotation: number = 0;
-    startRotation: number;
+    orbitalDistance: number;
+    previousRotation: number;
+    previousPosition: Vector2;
     speed: number;
-    yOrigin: number;
-    x: number;
-    y: number;
-    trail: number = 1;
-    hoverPos: number;
-    collapseBonus: number;
-    expansPos: number;
-    prevR: number;
-    prevX: number;
-    prevY: number;
+
+    get collapseDistance() {
+        return this.blackHole.radius
+    }
 
     get context() {
         return this.blackHole.context;
@@ -170,99 +172,58 @@ class Star {
 
     blackHole: BlackHole;
 
-    get centerX(): number {
-        return this.blackHole.xPos;
-    }
-
-    get centerY(): number {
-        return this.blackHole.yPos;
-    }
-
-    get xPos(): number {
-        return 0;
-    }
-
-    get yPos(): number {
-        return 0;
+    get centerPos(): Vector2 {
+        return this.blackHole.position;
     }
 
     constructor(blackHole: BlackHole, index: number) {
         this.blackHole = blackHole;
-
-        let rands = [];
-        rands.push(Math.random() * (maxOrbit / 2) + 1);
-        rands.push(Math.random() * (maxOrbit / 2) + maxOrbit);
-        this.orbitDistance = (rands.reduce(function (p, c) {
-            return p + c;
-        }, 0) / rands.length);
-
-        this.collapseBonus = this.orbitDistance - (maxOrbit * 0.7); // This "bonus" is used to randomly place some stars outside of the blackhole on hover
-        if (this.collapseBonus < 0) { // if the collapsed "bonus" is negative
-            this.collapseBonus = 0; // set it to 0, this way no stars will go inside the blackhole
-        }
-
-        this.x = blackHole.xPos;
-        this.y = blackHole.yPos;
-        this.startRotation = (Math.floor(Math.random() * 360) + 1) * Math.PI / 180; // Starting rotation.  If not random, all stars will be generated in a single line.
-        this.speed = (Math.floor(Math.random() * 2.5) + 1.5) * Math.PI / 180; // The rate at which this star will orbit
-        this.yOrigin = this.y + this.orbitDistance;  // this is used to track the particles origin
-        this.hoverPos = this.blackHole.yPos + (maxOrbit / 2) + this.collapseBonus;  // Where the star will go on hover of the blackhole
-        this.expansPos = blackHole.yPos + (index % 100) * -10 + (Math.floor(Math.random() * 20) + 1); // Where the star will go when expansion takes place
-        this.prevR = this.startRotation;
-        this.prevX = this.x;
-        this.prevY = this.y;
-
-        this.color = 'rgba(255,255,255,' + (1 - ((this.orbitDistance) / 255)) + ')';
+        this.orbitalDistance = randomRange(this.blackHole.radius, maxOrbit + this.blackHole.radius);
+        this.previousRotation = randomRange(0, 360);
+        this.speed = randomRange(0, 10);
+        this.previousPosition = {x: this.blackHole.position.x, y: this.orbitalDistance};
     }
 
     draw(time: number, collapsed: boolean, expanded: boolean) {
-        if (!expanded) {
-            this.rotation = this.startRotation + (time * this.speed);
-            if (!collapsed) { // not hovered
-                if (this.y > this.yOrigin) {
-                    this.y -= 2.5;
-                }
-                if (this.y < this.yOrigin - 4) {
-                    this.y += (this.yOrigin - this.y) / 10;
-                }
-            } else { // on hover
-                this.trail = 1;
-                if (this.y > this.hoverPos) {
-                    this.y -= (this.hoverPos - this.y) / -5;
-                }
-                if (this.y < this.hoverPos - 4) {
-                    this.y += 2.5;
-                }
-            }
-        } else {
-            this.rotation = this.startRotation + (time * (this.speed / 2));
-            if (this.y > this.expansPos) {
-                this.y -= Math.floor(this.expansPos - this.y) / -140;
-            }
-        }
 
-        this.context.save();
-
-        this.context.fillStyle = this.color;
-        this.context.strokeStyle = this.color;
-        this.context.beginPath();
-        const oldPos = rotate(this.centerX, this.centerY, this.prevX, this.prevY, -this.prevR);
-        this.context.moveTo(oldPos[0], oldPos[1]);
-        this.context.translate(this.centerX, this.centerY);
-        this.context.rotate(this.rotation);
-        this.context.translate(-this.centerX, -this.centerY);
-        this.context.lineTo(this.x, this.y);
-        this.context.stroke();
-
-        this.context.restore();
+        const newPosition = rotate(this.blackHole.position, this.previousPosition, this.previousRotation + this.speed);
+        const this.previousRotation = this.previousRotation + this.speed;
     }
 }
 
-function rotate(cx: number, cy: number, x: number, y: number, angle: number) {
+interface Vector2 {
+    x: number,
+    y: number
+}
+
+function rotate(centerPosition: Vector2, currentPosition: Vector2, angle: number) {
     let radians = angle,
         cos = Math.cos(radians),
         sin = Math.sin(radians),
-        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
-        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
-    return [nx, ny];
+        nx = (cos * (currentPosition.x - centerPosition.x)) + (sin * (currentPosition.y - centerPosition.y)) + centerPosition.x,
+        ny = (cos * (currentPosition.y - centerPosition.y)) - (sin * (currentPosition.x - centerPosition.x)) + centerPosition.y;
+    return {x: nx, y: ny};
+}
+
+function drawSphere(context: CanvasRenderingContext2D, position: Vector2, radius: number, strokeStyle: Color, fillStyle: Color, filled: boolean = false) {
+    context.save();
+    context.arc(position.x, position.y, radius, 0, 2 * Math.PI, false);
+
+    context.strokeStyle = strokeStyle;
+    context.stroke();
+
+    if (filled) {
+        context.fillStyle = fillStyle;
+        context.fill();
+    }
+
+    context.restore();
+}
+
+function drawStar() {
+
+}
+
+function randomRange(min: number, max: number) {
+    return Math.random() * (max - min) + min;
 }
