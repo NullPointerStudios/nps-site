@@ -1,7 +1,6 @@
 import {Color} from 'csstype';
 import React from 'react';
 
-const holeCount = 1;
 const starCount = 2500;
 const maxOrbit = 250;
 
@@ -161,6 +160,7 @@ class Star {
   previousRotation: number;
   previousPosition: Vector2;
   speed: number;
+  color: string = 'rgba(255,255,255,1)';
 
   get collapseDistance() {
     return this.blackHole.radius
@@ -185,9 +185,13 @@ class Star {
   }
 
   draw(time: number, collapsed: boolean, expanded: boolean) {
-
     const newPosition = rotate(this.blackHole.position, this.previousPosition, this.previousRotation + this.speed);
-    this.previousRotation = this.previousRotation + this.speed;
+    const newRotation = this.previousRotation + this.speed;
+
+    drawStar(this.context, this.previousPosition, newPosition, this.color);
+
+    this.previousPosition = newPosition;
+    this.previousRotation = newRotation;
   }
 }
 
@@ -220,8 +224,19 @@ function drawSphere(context: CanvasRenderingContext2D, position: Vector2, radius
   context.restore();
 }
 
-function drawStar() {
+function drawStar(context: CanvasRenderingContext2D, oldPosition: Vector2, newPosition: Vector2, strokeStyle: string) {
+  context.save();
 
+  context.beginPath();
+  context.fillStyle = strokeStyle;
+  context.strokeStyle = strokeStyle;
+
+  context.moveTo(oldPosition.x, oldPosition.y);
+  context.lineTo(newPosition.y, newPosition.y);
+  context.closePath();
+  context.stroke();
+
+  context.restore();
 }
 
 function randomRange(min: number, max: number) {
