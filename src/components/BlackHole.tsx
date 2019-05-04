@@ -31,7 +31,7 @@ export class Universe extends React.Component<NPSUniverseProps, NPSUniverseState
 
         this.state = {
             collapsed: false,
-            expanded: true,
+            expanded: false,
         }
     }
 
